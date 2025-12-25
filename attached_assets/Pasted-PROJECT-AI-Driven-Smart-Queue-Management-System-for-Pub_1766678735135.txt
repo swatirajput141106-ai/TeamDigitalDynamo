@@ -1,0 +1,138 @@
+PROJECT: AI-Driven Smart Queue Management System for Public Service Centers
+TEAM: Digital Dynamo
+PURPOSE: Hackathon MVP Demo - Judges need to see working concept with AI integration
+
+===== CONCEPT OVERVIEW =====
+Build a web app that eliminates long physical queues at government offices (passport, municipal, healthcare). Citizens join queues virtually, get AI-predicted wait times, and arrive only when their turn approaches. Service centers see real-time dashboards to manage counters efficiently.
+
+===== TECH STACK =====
+- Backend: Python Flask (simple, single file preferred)
+- Frontend: HTML, CSS, JavaScript (vanilla, no frameworks)
+- AI: Google Gemini API (gemini-1.5-flash model)
+- Database: In-memory mock data (Python dictionaries/lists)
+- Maps: Google Maps embed iframe
+- No Firebase, No SQL, No complex auth - keep it simple for demo
+
+===== CORE FEATURES TO BUILD =====
+
+1. CITIZEN DASHBOARD (Main Page)
+   - View nearby service centers (cards with name, address, current wait, open counters)
+   - See live queue for selected center (table: token number, service type, status, estimated wait)
+   - "Join Queue" button → form modal (name, phone, select service type)
+   - After joining: show assigned token, position in queue, predicted wait time
+   - Google Maps embed showing center location
+
+2. AI WAIT TIME PREDICTOR
+   - Button: "Get AI Prediction"
+   - Sends current queue stats to Gemini API
+   - Displays: predicted wait (minutes), rush level (low/medium/high), best time to visit recommendation
+   - Gemini prompt should ask for JSON response only for easy parsing
+
+3. ADMIN/COUNTER VIEW (Simple Tab or Separate Route)
+   - List of people in queue with "Call Next" and "Mark Complete" buttons
+   - Counter status toggles (active/inactive)
+   - Simple analytics: people served today, average wait time (mock numbers)
+
+4. NOTIFICATION SIMULATION
+   - When user joins queue, show alert: "You will be notified when 3 people are ahead"
+   - Visual indicator when turn is approaching (highlight row, show badge)
+
+===== MOCK DATA STRUCTURE =====
+
+Service Centers (3-4 centers):
+- ID, name, address, latitude, longitude, total_counters, active_counters, avg_service_time, current_queue_length
+
+Queue Entries (5-8 sample entries):
+- token_number (format: A001, A002...), citizen_name, phone, service_type, status (waiting/serving/completed), counter_assigned, join_time, estimated_wait_minutes
+
+Services Available:
+- Document Verification, New Application, Certificate Collection, Query Resolution, Payment & Fees
+
+Counter Data:
+- counter_id, center_id, status (active/inactive), currently_serving (token or null), services_handled_today
+
+===== GEMINI API INTEGRATION =====
+
+Create endpoint POST /api/predict that:
+1. Receives: queue_length, service_type, active_counters, time_of_day
+2. Constructs prompt asking Gemini to predict wait time based on these factors
+3. Instructs Gemini to respond ONLY in JSON format: {"wait_minutes": X, "rush_level": "low/medium/high", "tip": "brief recommendation"}
+4. Parses response and returns to frontend
+
+Use environment variable GEMINI_API_KEY from Replit Secrets.
+Use google-generativeai Python package.
+Keep prompts short (<100 tokens) to minimize API costs.
+
+===== UI/UX REQUIREMENTS =====
+
+Design Style:
+- Clean, modern, government-professional aesthetic
+- Primary color: #1a73e8 (blue), Secondary: #34a853 (green), Accent: #ea4335 (red for alerts)
+- White background, subtle shadows on cards
+- Border-radius: 8-12px on cards and buttons
+- Responsive layout (works on laptop screens for demo)
+
+Layout Structure:
+- Fixed header: Logo/title "SmartQueue" + navigation tabs (Dashboard, Admin, About)
+- Main content: 3-column grid on desktop
+  - Left: Center selection cards
+  - Middle: Live queue table (largest section)
+  - Right: Join queue form + AI prediction box
+- Footer: Team name, hackathon name
+
+Visual Elements:
+- Status badges: Green (serving), Yellow (waiting), Gray (completed)
+- Progress indicator showing queue position
+- Animated refresh icon when fetching data
+- Loading spinner during AI prediction
+
+===== API ROUTES =====
+
+GET / → Main dashboard page
+GET /admin → Admin/counter management page
+GET /api/centers → Return all service centers
+GET /api/queue/<center_id> → Return queue for specific center
+POST /api/join → Add person to queue, return token details
+POST /api/predict → Get AI wait prediction from Gemini
+POST /api/call-next → Mark next person as serving (admin)
+POST /api/complete → Mark current as completed (admin)
+
+===== JAVASCRIPT FUNCTIONALITY =====
+
+- Auto-refresh queue table every 5 seconds using fetch()
+- Form validation before queue submission
+- Modal/popup for join queue form
+- Smooth animations on state changes
+- LocalStorage to remember user's token if they joined
+- Click on center card to filter queue view
+
+===== IMPORTANT NOTES =====
+
+1. This is a DEMO - prioritize visual appeal and concept demonstration over production robustness
+2. All data resets on server restart (that's fine for demo)
+3. Gemini responses may vary - handle gracefully with try/catch
+4. Include sample data that tells a story (realistic Indian names, government services)
+5. Add subtle animations to make it feel "live" and dynamic
+6. Include a small "Powered by Gemini AI" badge near the prediction feature
+
+===== FILES TO CREATE =====
+
+- app.py (Flask backend with all routes and mock data)
+- templates/index.html (main dashboard)
+- templates/admin.html (admin view)
+- static/style.css (all styling)
+- static/script.js (frontend interactivity)
+- requirements.txt (flask, google-generativeai)
+- .replit and replit.nix if needed
+
+===== SUCCESS CRITERIA =====
+
+The MVP is successful if:
+✓ A judge can open the app and immediately understand what it does
+✓ They can "join" a queue and see themselves appear in the list
+✓ The AI prediction button works and returns a believable response
+✓ The admin can "call next" and queue updates visually
+✓ It looks polished enough for a hackathon demo
+✓ Nothing crashes during a 5-minute demo walkthrough
+
+Build this complete application. Make it visually impressive and functionally demonstrative. Focus on the user experience that showcases innovation in queue management using AI.
